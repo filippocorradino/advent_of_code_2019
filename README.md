@@ -9,4 +9,10 @@ AoC 2019 (https://adventofcode.com/2019)
 |-----|---|---|----------|
 | 01  | * | * |  Python  |
 | 02  | * | * |  Python  |
+| 03  | * | * |  Python  |
 ```
+
+
+#### Target
+* Simple and readable code, as pythonic as I can make it
+* Readability and versatility over efficiency
