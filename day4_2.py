@@ -34,6 +34,7 @@ def main():
             possiblePasswords = possiblePasswords + 1
 
     print("\nPossible passwords: {0}\n".format(possiblePasswords))
+    return possiblePasswords
 
 
 if __name__ == "__main__":

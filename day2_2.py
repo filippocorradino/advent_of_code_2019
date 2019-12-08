@@ -26,9 +26,11 @@ def main():
         program.execute()
         if program.memory[0] == output:
             break
+    programCode = 100*noun+verb
     print("\nThe program outputting {0} is: {1:04d} "
           "(noun {2:02d} - verb {3:02d})\n"
-          .format(program.memory[0], 100*noun+verb, noun, verb))
+          .format(program.memory[0], programCode, noun, verb))
+    return programCode
 
 
 if __name__ == "__main__":

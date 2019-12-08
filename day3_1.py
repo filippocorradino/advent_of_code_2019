@@ -47,7 +47,9 @@ def main():
     # Find overlaps and filter them
     overlaps = [sum(abs(x) for x in point)
                 for point in wiring if len(wiring[point]) > 1]
-    print("\nMinimum distance: {0}\n".format(min(overlaps)))
+    answer = min(overlaps)
+    print("\nMinimum distance: {0}\n".format(answer))
+    return answer
 
 
 if __name__ == "__main__":

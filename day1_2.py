@@ -31,6 +31,7 @@ def main():
                     moduleFuel = moduleFuel + newFuel
             fuel = fuel + moduleFuel
     print("\nFinal fuel count: {0}\n".format(fuel))
+    return fuel
 
 
 if __name__ == "__main__":

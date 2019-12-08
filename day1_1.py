@@ -24,7 +24,7 @@ def main():
         for line in file:
             fuel = fuel + required_fuel(int(line))
     print("\nFinal fuel count: {0}\n".format(fuel))
-    return
+    return fuel
 
 
 if __name__ == "__main__":

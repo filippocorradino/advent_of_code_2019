@@ -21,6 +21,7 @@ def main():
     program.dsky(12, 2)
     program.execute()
     print("\nFinal value at position 0: {0}\n".format(program.memory[0]))
+    return program.memory[0]
 
 
 if __name__ == "__main__":

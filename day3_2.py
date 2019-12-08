@@ -49,7 +49,9 @@ def main():
     # Find overlaps and filter them
     overlaps = [sum(connections.values())
                 for _, connections in wiring.items() if len(connections) > 1]
-    print("\nMinimum combined-steps: {0}\n".format(min(overlaps)))
+    answer = min(overlaps)
+    print("\nMinimum combined-steps: {0}\n".format(answer))
+    return answer
 
 
 if __name__ == "__main__":
