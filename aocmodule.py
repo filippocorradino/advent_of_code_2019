@@ -268,3 +268,22 @@ class Intcode():
             self.step()
             # TODO: if outputflag, wait for someone to read (optional)
             # TODO: if input required, wait for it
+
+
+class Orbiter():
+
+    def __init__(self, atlas, main=None):
+        self.atlas = atlas
+        self.main = main
+
+    def get_orbits(self):
+        if self.main is not None:
+            return self.atlas[self.main].get_orbits() + 1
+        else:
+            return 0
+
+    def get_chain(self):
+        if self.main is not None:
+            return [self.main] + self.atlas[self.main].get_chain()
+        else:
+            return []

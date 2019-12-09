@@ -11,6 +11,8 @@ AoC 2019 (https://adventofcode.com/2019)
 | 02  | * | * |  Python  |
 | 03  | * | * |  Python  |
 | 04  | * | * |  Python  |
+| 05  | * | * |  Python  |
+| 06  | * | * |  Python  |
 ```
 
 
