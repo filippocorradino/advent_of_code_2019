@@ -24,7 +24,9 @@ class Test_Results(unittest.TestCase):
                  'day3_1': 1285,
                  'day3_2': 14228,
                  'day4_1': 1063,
-                 'day4_2': 686}
+                 'day4_2': 686,
+                 'day5_1': 13285749,
+                 'day5_2': 5000972}
 
     def test_results(self):
         """
