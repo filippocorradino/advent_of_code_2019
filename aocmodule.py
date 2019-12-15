@@ -13,13 +13,11 @@ class Intcode():
 
     def __init__(self, state=[]):
         self.load(state)
-        self.inputRegister = None
-        self.outputRegister = None
-        self.outputFlag = False
+        self.clear_buffers()
 
     # State loading and setting methods
 
-    def load(self, state, ip=0):
+    def load(self, state, ip=0, clearBuffers=False):
         """Load a program
 
         Loads a program into memory and sets the Instruction Pointer.
@@ -32,8 +30,12 @@ class Intcode():
         """
         self.memory = state
         self.ip = ip
-        self.ishalted = False
         self.original = self.memory.copy()  # Save a static copy
+        # Reset status flags
+        self.iswaiting = False
+        self.ishalted = False
+        if clearBuffers:
+            self.clear_buffers()
 
     def load_from_file(self, file, ip=0):
         """Load a program from file
@@ -59,7 +61,15 @@ class Intcode():
         """
         self.load(self.original)
 
-# I/O methods
+    def clear_buffers(self):
+        """Clear I/O buffers
+
+        Clears both input and output buffers.
+        """
+        self.inputBuffer = []
+        self.outputBuffer = []
+
+    # I/O methods
 
     def dsky(self, noun, verb):
         """DSKY input
@@ -80,18 +90,22 @@ class Intcode():
 
         Args:
             value (int):
-                Numeric input to be loaded into the input register.
+                Numeric input to be pushed into the input buffer.
         """
-        self.inputRegister = value
+        self.inputBuffer.append(value)
 
     def output(self):
         """General input
 
         Returns:
-            outputRegister (int):
-                Current contents of the output register.
+            output (int):
+                Oldest item in the output buffer.
         """
-        return self.outputRegister
+        if self.outputBuffer:
+            output = self.outputBuffer.pop(0)
+            return output
+        else:
+            return None
 
     # Running methods
 
@@ -183,8 +197,6 @@ class Intcode():
 
         Executes one instruction cycle.
         """
-        # Reset flags
-        self.outputFlag = False
         # Fetch and execute next instruction
         opcode, raw_modes = self._parse_opcode(self.memory[self.ip])
         if opcode == 1:
@@ -206,19 +218,20 @@ class Intcode():
             nParams = 1
             modes, values = self._parse_parameters(opcode, raw_modes, nParams)
             assert modes[1] == '0'  # Save always position mode
-            assert self.inputRegister is not None  # Input available
-            self.memory[self.memory[self.ip+1]] = self.inputRegister
-            self._std_ip_advance(nParams)
+            if self.inputBuffer:  # Input available
+                self.iswaiting = False  # Clear waiting condition, if any
+                self.memory[self.memory[self.ip+1]] = self.inputBuffer.pop(0)
+                self._std_ip_advance(nParams)
+            else:
+                self.iswaiting = True
         if opcode == 4:
             # 1 parameter. MOV OUT, (IP+1)
             nParams = 1
             _, values = self._parse_parameters(opcode, raw_modes, nParams)
-            self.outputRegister = values[1]
-            self.outputFlag = True
-            print(self.outputRegister)  # Temporary
+            self.outputBuffer.append(values[1])
             self._std_ip_advance(nParams)
         if opcode == 5:
-            # 2 parameters. JEZ (IP+2)
+            # 2 parameters. JNZ (IP+2)
             nParams = 2
             _, values = self._parse_parameters(opcode, raw_modes, nParams)
             if values[1] is not 0:
@@ -226,7 +239,7 @@ class Intcode():
             else:
                 self._std_ip_advance(nParams)
         if opcode == 6:
-            # 2 parameters. JNZ (IP+2)
+            # 2 parameters. JEZ (IP+2)
             nParams = 2
             _, values = self._parse_parameters(opcode, raw_modes, nParams)
             if values[1] is 0:
@@ -266,8 +279,102 @@ class Intcode():
         """
         while not self.ishalted:
             self.step()
-            # TODO: if outputflag, wait for someone to read (optional)
-            # TODO: if input required, wait for it
+
+
+class Intnetwork():
+
+    #               0  1  2  3     4  5  6  7
+    PORT_PROGRAM = [3, 7, 4, 7, 1106, 0, 0, 0]  # Move IN to OUT
+    # MOV [7], IN
+    # MOV OUT, [7]
+    # JEZ 0
+
+    def __init__(self, nodes={}):
+        self.nodes = {}
+        self.ports = []
+        self.pipes = []
+        self.add_nodes(nodes)
+
+    def add_nodes(self, tags):
+        """Add a set of Intcode computers
+
+        Args:
+            tags (Iterable):
+                Tags to refer to the nodes.
+        """
+        for tag in tags:
+            self.nodes.update({tag: Intcode()})
+
+    def add_ports(self, tags):
+        """Add a set of ports (or make some node ports)
+
+        Args:
+            tags (Iterable):
+                Tags to refer to the ports.
+        """
+        for tag in tags:
+            if tag not in self.nodes:
+                self.nodes.update({tag: Intcode()})
+            self.nodes[tag].load(Intnetwork.PORT_PROGRAM)
+
+    def add_pipe(self, source, dest):
+        """Add an I/O pipes
+
+        An I/O pipe redirects outputs from sourcenode to inputs for destnode.
+        One value is transferred per step.
+
+        TODO: add support for multiple additions
+
+        Args:
+            source (hashable):
+                Tag of the source node of the pipe
+            dest (hashable):
+                Tag of the destination node of the pipe
+        """
+        for end in (source, dest):
+            if all(end not in available
+                   for available in (self.nodes, self.ports)):
+                raise KeyError("Node is not a valid node/port of the network")
+        self.pipes.append((source, dest))
+
+    def clear_buffers(self, targets):
+        """Clear buffers
+
+        Clears the buffers of a set of nodes or ports.
+        """
+        for target in targets:
+            if target in self.nodes:
+                self.nodes[target].clear_buffers()
+            elif target in self.ports:
+                self.ports[target].clear_buffers()
+            else:
+                raise KeyError("Target is not a valid node/port of the network")
+
+    def step(self):
+        """Programs step
+
+        Executes one instruction cycle for each node in the network.
+        Also pushes up to one item of data along each I/O pipe.
+        Supports multiple pipes connected to a same node, in which case the
+        outgoing value is copied over all the pipes.
+        """
+        for node in self.nodes:
+            self.nodes[node].step()
+            outPipes = [pipe for pipe in self.pipes if pipe[0] == node]
+            if outPipes:
+                item = self.nodes[node].output()
+                if item is not None:
+                    for pipe in outPipes:
+                        self.nodes[pipe[1]].input(item)
+
+    def execute(self):
+        """Run the programs to completion
+
+        Steps through the programs until all of them halt or are waiting.
+        """
+        while not all((self.nodes[node].ishalted or self.nodes[node].iswaiting)
+                      for node in self.nodes):
+            self.step()
 
 
 class Orbiter():
