@@ -12,6 +12,7 @@ __email__ = "filippo.corradino@gmail.com"
 class Intcode():
 
     def __init__(self, state=[]):
+        self.memory = {}
         self.load(state)
         self.clear_buffers()
 
@@ -28,8 +29,10 @@ class Intcode():
             ip (int):
                 The value to be assigned to the Instruction Pointer.
         """
-        self.memory = state
+        for position in range(len(state)):
+            self.memory.update({position: state[position]})
         self.ip = ip
+        self.relativeBase = 0
         self.original = self.memory.copy()  # Save a static copy
         # Reset status flags
         self.iswaiting = False
@@ -71,6 +74,41 @@ class Intcode():
 
     # I/O methods
 
+    def _fetch(self, address):
+        """Fetch a value from memory
+
+        Fetches a value from memory at a given address.
+        If the address is not yet recorded, it is added, then its value
+        initialized to 0, and the method returns 0.
+
+        Args:
+            address (int):
+                The memory address.
+
+        Returns:
+            value (int):
+                The value stored at the given address.
+        """
+        if address not in self.memory:
+            self.memory.update({address: 0})
+        value = self.memory[address]
+        return value
+
+    def _store(self, address, value):
+        """Writes a value to memory
+
+        Writes a value to memory at a given address.
+        If the address is not yet recorded, it is added, then its value is
+        written.
+
+        Args:
+            address (int):
+                The memory address.
+            value (int):
+                The value to be stored at the given address.
+        """
+        self.memory.update({address: value})
+
     def dsky(self, noun, verb):
         """DSKY input
 
@@ -82,8 +120,8 @@ class Intcode():
             verb (int):
                 VERB part of the statement, goes to memory[2].
         """
-        self.memory[1] = noun
-        self.memory[2] = verb
+        self._store(1, noun)
+        self._store(2, verb)
 
     def input(self, value):
         """General input
@@ -165,20 +203,30 @@ class Intcode():
             values (list):
                 values[0] is the refined opcode (no mode information)
                 values[1:] are the other parameters of the instruction
+
+            addresses (list):
+                addresses from where the items in values were fetched
         """
         modes = '{0:0{1}d}X'.format(raw_modes, n_parameters)
         modes = modes[::-1]
         values = [opcode]
+        addresses = [self.ip]
         for offset in range(1, 1+n_parameters):
-            parameter = self.memory[self.ip+offset]
+            parameter = self._fetch(self.ip+offset)
             mode = modes[offset]
             if mode == '0':
                 # Position mode
-                values.append(self.memory[parameter])
+                address = parameter
             if mode == '1':
                 # Immediate mode
-                values.append(parameter)
-        return modes, values
+                address = self.ip+offset
+            if mode == '2':
+                # Relative mode
+                address = parameter + self.relativeBase
+            addresses.append(address)
+            values.append(self._fetch(address))
+
+        return modes, values, addresses
 
     def _std_ip_advance(self, n_parameters):
         """Standard Instruction Pointer advance
@@ -198,42 +246,45 @@ class Intcode():
         Executes one instruction cycle.
         """
         # Fetch and execute next instruction
-        opcode, raw_modes = self._parse_opcode(self.memory[self.ip])
+        opcode, raw_modes = self._parse_opcode(self._fetch(self.ip))
         if opcode == 1:
             # 3 parameters. MOV [IP+3], (IP+1) + (IP+2)
             nParams = 3
-            modes, values = self._parse_parameters(opcode, raw_modes, nParams)
-            assert modes[3] == '0'  # Output always position mode
-            self.memory[self.memory[self.ip+3]] = values[1] + values[2]
+            modes, values, addresses = \
+                self._parse_parameters(opcode, raw_modes, nParams)
+            assert modes[3] in '02'  # Output always position-like mode
+            self._store(addresses[3], values[1] + values[2])
             self._std_ip_advance(nParams)
         if opcode == 2:
             # 3 parameters. MOV [IP+3], (IP+1) * (IP+2)
             nParams = 3
-            modes, values = self._parse_parameters(opcode, raw_modes, nParams)
-            assert modes[3] == '0'  # Output always position mode
-            self.memory[self.memory[self.ip+3]] = values[1] * values[2]
+            modes, values, addresses = \
+                self._parse_parameters(opcode, raw_modes, nParams)
+            assert modes[3] in '02'  # Output always position-like mode
+            self._store(addresses[3], values[1] * values[2])
             self._std_ip_advance(nParams)
         if opcode == 3:
             # 1 parameter. MOV [IP+1], IN
             nParams = 1
-            modes, values = self._parse_parameters(opcode, raw_modes, nParams)
-            assert modes[1] == '0'  # Save always position mode
+            modes, values, addresses = \
+                self._parse_parameters(opcode, raw_modes, nParams)
+            assert modes[1] in '02'  # Save always position-like mode
             if self.inputBuffer:  # Input available
                 self.iswaiting = False  # Clear waiting condition, if any
-                self.memory[self.memory[self.ip+1]] = self.inputBuffer.pop(0)
+                self._store(addresses[1], self.inputBuffer.pop(0))
                 self._std_ip_advance(nParams)
             else:
                 self.iswaiting = True
         if opcode == 4:
             # 1 parameter. MOV OUT, (IP+1)
             nParams = 1
-            _, values = self._parse_parameters(opcode, raw_modes, nParams)
+            _, values, _ = self._parse_parameters(opcode, raw_modes, nParams)
             self.outputBuffer.append(values[1])
             self._std_ip_advance(nParams)
         if opcode == 5:
             # 2 parameters. JNZ (IP+2)
             nParams = 2
-            _, values = self._parse_parameters(opcode, raw_modes, nParams)
+            _, values, _ = self._parse_parameters(opcode, raw_modes, nParams)
             if values[1] is not 0:
                 self.ip = values[2]
             else:
@@ -241,7 +292,7 @@ class Intcode():
         if opcode == 6:
             # 2 parameters. JEZ (IP+2)
             nParams = 2
-            _, values = self._parse_parameters(opcode, raw_modes, nParams)
+            _, values, _ = self._parse_parameters(opcode, raw_modes, nParams)
             if values[1] is 0:
                 self.ip = values[2]
             else:
@@ -249,24 +300,32 @@ class Intcode():
         if opcode == 7:
             # 3 parameters. MOV [IP+3], (IP+1) < (IP+2)
             nParams = 3
-            modes, values = self._parse_parameters(opcode, raw_modes, nParams)
-            assert modes[3] == '0'  # Output always position mode
+            modes, values, addresses = \
+                self._parse_parameters(opcode, raw_modes, nParams)
+            assert modes[3] in '02'  # Output always position-like mode
             if values[1] < values[2]:
                 result = 1
             else:
                 result = 0
-            self.memory[self.memory[self.ip+3]] = result
+            self._store(addresses[3], result)
             self._std_ip_advance(nParams)
         if opcode == 8:
             # 3 parameters. MOV [IP+3], (IP+1) == (IP+2)
             nParams = 3
-            modes, values = self._parse_parameters(opcode, raw_modes, nParams)
-            assert modes[3] == '0'  # Output always position mode
+            modes, values, addresses = \
+                self._parse_parameters(opcode, raw_modes, nParams)
+            assert modes[3] in '02'  # Output always position-like mode
             if values[1] == values[2]:
                 result = 1
             else:
                 result = 0
-            self.memory[self.memory[self.ip+3]] = result
+            self._store(addresses[3], result)
+            self._std_ip_advance(nParams)
+        if opcode == 9:
+            # 1 parameter. MOV RB, RB + (IP+1)
+            nParams = 1
+            _, values, _ = self._parse_parameters(opcode, raw_modes, nParams)
+            self.relativeBase = self.relativeBase + values[1]
             self._std_ip_advance(nParams)
         if opcode == 99:
             # 1 parameters. HCF
@@ -348,7 +407,7 @@ class Intnetwork():
             elif target in self.ports:
                 self.ports[target].clear_buffers()
             else:
-                raise KeyError("Target is not a valid node/port of the network")
+                raise KeyError("Target isn't a valid node/port of the network")
 
     def step(self):
         """Programs step
