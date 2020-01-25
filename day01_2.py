@@ -12,7 +12,7 @@ PEP 8 compliant
 __author__ = "Filippo Corradino"
 __email__ = "filippo.corradino@gmail.com"
 
-from day1_1 import required_fuel
+from day01_1 import required_fuel
 
 
 def main():

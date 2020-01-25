@@ -12,7 +12,7 @@ PEP 8 compliant
 __author__ = "Filippo Corradino"
 __email__ = "filippo.corradino@gmail.com"
 
-from day6_1 import import_orbitmap
+from day06_1 import import_orbitmap
 
 
 def main():

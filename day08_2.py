@@ -12,7 +12,7 @@ PEP 8 compliant
 __author__ = "Filippo Corradino"
 __email__ = "filippo.corradino@gmail.com"
 
-from day8_1 import chunk_string, get_picture_layers
+from day08_1 import chunk_string, get_picture_layers
 
 
 def main():
