@@ -20,7 +20,7 @@ def required_fuel(module_mass):
 
 def main():
     fuel = 0
-    with open('inputs/day_1_input.txt') as file:
+    with open('inputs/day_01_input.txt') as file:
         for line in file:
             fuel = fuel + required_fuel(int(line))
     print("\nFinal fuel count: {0}\n".format(fuel))

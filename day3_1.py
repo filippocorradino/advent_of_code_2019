@@ -24,7 +24,7 @@ def main():
                'D': (0, -1),
                'L': (-1, 0),
                'R': (+1, 0)}
-    with open('inputs/day_3_input.txt') as file:
+    with open('inputs/day_03_input.txt') as file:
         wiring = {}
         wireID = 0
         for line in file:

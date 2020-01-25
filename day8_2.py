@@ -20,7 +20,7 @@ def main():
                   '1': ' '}   # White space
     width = 25
     height = 6
-    layers = list(get_picture_layers('inputs/day_8_input.txt', width, height))
+    layers = list(get_picture_layers('inputs/day_08_input.txt', width, height))
     merger = \
         ''.join(next(colour for colour in pixel if colour is not '2')
                 for pixel in zip(*layers))

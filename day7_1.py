@@ -35,7 +35,7 @@ def main():
         ampli_circuit.clear_buffers(ports)
         i_node = 0
         for amp in amps:
-            ampli_circuit.nodes[amp].load_from_file('inputs/day_7_input.txt')
+            ampli_circuit.nodes[amp].load_from_file('inputs/day_07_input.txt')
             ampli_circuit.nodes[amp].input(sequence[i_node])
             i_node = i_node + 1
         ampli_circuit.nodes['INPUT'].input(0)

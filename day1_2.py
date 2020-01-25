@@ -17,7 +17,7 @@ from day1_1 import required_fuel
 
 def main():
     fuel = 0
-    with open('inputs/day_1_input.txt') as file:
+    with open('inputs/day_01_input.txt') as file:
         for line in file:
             module_fuel = 0
             new_fuel = int(line)  # Initialize to module dry mass

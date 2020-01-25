@@ -17,7 +17,7 @@ from aocmodule import Intcode
 
 def main():
     program = Intcode()
-    program.load_from_file('inputs/day_9_input.txt')
+    program.load_from_file('inputs/day_09_input.txt')
     program.input(1)
     program.execute()
     while program.output_buffer:

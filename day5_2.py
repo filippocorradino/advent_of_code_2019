@@ -17,7 +17,7 @@ from aocmodule import Intcode
 
 def main():
     program = Intcode()
-    program.load_from_file('inputs/day_5_input.txt')
+    program.load_from_file('inputs/day_05_input.txt')
     program.input(5)
     program.execute()
     diagnostic_code = program.output()

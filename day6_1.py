@@ -18,7 +18,7 @@ from aocmodule import Orbiter
 def import_orbitmap():
     bodies = {}
     bodies.update({'COM': Orbiter(bodies)})
-    with open('inputs/day_6_input.txt') as file:
+    with open('inputs/day_06_input.txt') as file:
         for line in file:
             line = line.rstrip()
             main_body, orbiter = line.split(')')

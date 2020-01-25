@@ -17,7 +17,7 @@ from aocmodule import Intcode
 
 def main():
     program = Intcode()
-    program.load_from_file('inputs/day_2_input.txt')
+    program.load_from_file('inputs/day_02_input.txt')
     program.dsky(12, 2)
     program.execute()
     print("\nFinal value at position 0: {0}\n".format(program.memory[0]))

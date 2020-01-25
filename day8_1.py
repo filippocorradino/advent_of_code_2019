@@ -24,7 +24,7 @@ def get_picture_layers(input_path, width, height):
 
 
 def main():
-    layers = list(get_picture_layers('inputs/day_8_input.txt', 25, 6))
+    layers = list(get_picture_layers('inputs/day_08_input.txt', 25, 6))
     layer_metric = [layer.count('0') for layer in layers]
     min_layer = layer_metric.index(min(layer_metric))
     count1 = layers[min_layer].count('1')
