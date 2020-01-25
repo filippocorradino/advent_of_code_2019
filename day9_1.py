@@ -20,10 +20,10 @@ def main():
     program.load_from_file('inputs/day_9_input.txt')
     program.input(1)
     program.execute()
-    while program.outputBuffer:
-        keyCode = program.output()
-    print("BOOST key code is: {0}\n".format(keyCode))
-    return keyCode
+    while program.output_buffer:
+        key_code = program.output()
+    print("BOOST key code is: {0}\n".format(key_code))
+    return key_code
 
 
 if __name__ == "__main__":

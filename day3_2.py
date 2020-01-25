@@ -20,26 +20,26 @@ def main():
         The length of the {wireID: weight, ...} dict gives info on overlaps
         The weight field can store other useful information to filter overlaps
     """
-    stepMap = {'U': (0, +1),
-               'D': (0, -1),
-               'L': (-1, 0),
-               'R': (+1, 0)}
+    step_map = {'U': (0, +1),
+                'D': (0, -1),
+                'L': (-1, 0),
+                'R': (+1, 0)}
     with open('inputs/day_3_input.txt') as file:
         wiring = {}
-        wireID = 0
+        wire_id = 0
         for line in file:
             wire = {}
-            wireID = wireID + 1
+            wire_id = wire_id + 1
             point = (0, 0)
             weight = 0
             for segment in line.split(','):
                 # Format of segment is DXXX, with D = U/D/L/R
-                step = stepMap[segment[0]]
-                for iStep in range(0, int(segment[1:])):
+                step = step_map[segment[0]]
+                for _ in range(0, int(segment[1:])):
                     # Ignore point at (0, 0)
                     point = tuple(x+y for x, y in zip(point, step))
                     weight = weight + 1
-                    entry = {wireID: weight}
+                    entry = {wire_id: weight}
                     if point not in wiring:
                         if point not in wire:
                             wire.update({point: entry})

@@ -19,17 +19,17 @@ def main():
     fuel = 0
     with open('inputs/day_1_input.txt') as file:
         for line in file:
-            moduleFuel = 0
-            newFuel = int(line)  # Initialize to module dry mass
+            module_fuel = 0
+            new_fuel = int(line)  # Initialize to module dry mass
             while True:
                 # Iteratively calculate fuel required
                 # On the first iteration it is calculated from module dry mass
-                newFuel = required_fuel(newFuel)
-                if newFuel <= 0:
+                new_fuel = required_fuel(new_fuel)
+                if new_fuel <= 0:
                     break
                 else:
-                    moduleFuel = moduleFuel + newFuel
-            fuel = fuel + moduleFuel
+                    module_fuel = module_fuel + new_fuel
+            fuel = fuel + module_fuel
     print("\nFinal fuel count: {0}\n".format(fuel))
     return fuel
 

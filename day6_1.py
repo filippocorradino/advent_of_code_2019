@@ -21,16 +21,16 @@ def import_orbitmap():
     with open('inputs/day_6_input.txt') as file:
         for line in file:
             line = line.rstrip()
-            main, orbiter = line.split(')')
-            bodies.update({orbiter: Orbiter(bodies, main)})
+            main_body, orbiter = line.split(')')
+            bodies.update({orbiter: Orbiter(bodies, main_body)})
     return bodies
 
 
 def main():
     bodies = import_orbitmap()
-    totalCount = sum(x.get_orbits() for x in bodies.values())
-    print("\nTotal orbit count is: {0}\n".format(totalCount))
-    return totalCount
+    total_count = sum(x.get_orbits() for x in bodies.values())
+    print("\nTotal orbit count is: {0}\n".format(total_count))
+    return total_count
 
 
 if __name__ == "__main__":

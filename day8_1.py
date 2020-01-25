@@ -17,22 +17,22 @@ def chunk_string(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
 
 
-def get_picture_layers(inputPath, width, height):
-    with open(inputPath) as file:
+def get_picture_layers(input_path, width, height):
+    with open(input_path) as file:
         raw_picture = ''.join(line for line in file)
-    return (chunk_string(raw_picture, width*height))
+    return chunk_string(raw_picture, width*height)
 
 
 def main():
     layers = list(get_picture_layers('inputs/day_8_input.txt', 25, 6))
-    layerMetric = [layer.count('0') for layer in layers]
-    minLayer = layerMetric.index(min(layerMetric))
-    count1 = layers[minLayer].count('1')
-    count2 = layers[minLayer].count('2')
-    totalCount = count1*count2
+    layer_metric = [layer.count('0') for layer in layers]
+    min_layer = layer_metric.index(min(layer_metric))
+    count1 = layers[min_layer].count('1')
+    count2 = layers[min_layer].count('2')
+    total_count = count1*count2
     print("\nNumber of 1 digits times number of 2 digits: {0}\n"
-          .format(totalCount))
-    return totalCount
+          .format(total_count))
+    return total_count
 
 
 if __name__ == "__main__":

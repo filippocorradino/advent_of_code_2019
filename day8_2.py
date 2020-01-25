@@ -16,8 +16,8 @@ from day8_1 import chunk_string, get_picture_layers
 
 
 def main():
-    colorDict = {'0': '█',  # Black block
-                 '1': ' '}   # White space
+    color_dict = {'0': '█',  # Black block
+                  '1': ' '}   # White space
     width = 25
     height = 6
     layers = list(get_picture_layers('inputs/day_8_input.txt', width, height))
@@ -26,7 +26,7 @@ def main():
                 for pixel in zip(*layers))
     rows = chunk_string(merger, width)
     for row in rows:
-        print(''.join(colorDict[pixel] for pixel in row))
+        print(''.join(color_dict[pixel] for pixel in row))
     print(merger)
     return merger
 

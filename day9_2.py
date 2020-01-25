@@ -20,7 +20,7 @@ def main():
     program.load_from_file('inputs/day_9_input.txt')
     program.input(2)
     program.execute()
-    while program.outputBuffer:
+    while program.output_buffer:
         coordinates = program.output()
     print("Distress signal coordinates are: {0}\n".format(coordinates))
     return coordinates

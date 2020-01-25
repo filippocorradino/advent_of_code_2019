@@ -20,10 +20,10 @@ def main():
     program.load_from_file('inputs/day_5_input.txt')
     program.input(1)
     program.execute()
-    while program.outputBuffer:
-        diagnosticCode = program.output()
-    print("\nDiagnostic code is: {0}\n".format(diagnosticCode))
-    return diagnosticCode
+    while program.output_buffer:
+        diagnostic_code = program.output()
+    print("\nDiagnostic code is: {0}\n".format(diagnostic_code))
+    return diagnostic_code
 
 
 if __name__ == "__main__":

@@ -34,7 +34,7 @@ def main():
             for segment in line.split(','):
                 # Format of segment is DXXX, with D = U/D/L/R
                 step = stepMap[segment[0]]
-                for iStep in range(0, int(segment[1:])):
+                for _ in range(0, int(segment[1:])):
                     # Ignore point at (0, 0)
                     point = tuple(x+y for x, y in zip(point, step))
                     entry = {wireID: 0}  # No weight required

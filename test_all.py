@@ -15,7 +15,7 @@ __email__ = "filippo.corradino@gmail.com"
 import unittest
 
 
-class Test_Results(unittest.TestCase):
+class TestResults(unittest.TestCase):
 
     solutions = {'day1_1': 3348909,
                  'day1_2': 5020494,

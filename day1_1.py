@@ -13,8 +13,8 @@ __author__ = "Filippo Corradino"
 __email__ = "filippo.corradino@gmail.com"
 
 
-def required_fuel(moduleMass):
-    fuel = int(moduleMass/3) - 2
+def required_fuel(module_mass):
+    fuel = int(module_mass/3) - 2
     return fuel
 
 

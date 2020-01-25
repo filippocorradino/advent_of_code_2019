@@ -12,43 +12,43 @@ PEP 8 compliant
 __author__ = "Filippo Corradino"
 __email__ = "filippo.corradino@gmail.com"
 
-from aocmodule import Intcode, Intnetwork
 import itertools
+from aocmodule import Intnetwork
 
 
 def main():
     amps = ('Amp A', 'Amp B', 'Amp C', 'Amp D', 'Amp E')
     ports = ('INPUT', 'THRUSTER')
-    ampliCircuit = Intnetwork()
-    ampliCircuit.add_nodes(amps)
-    ampliCircuit.add_ports(ports)
-    ampliCircuit.add_pipe('INPUT', 'Amp A')
-    ampliCircuit.add_pipe('Amp A', 'Amp B')
-    ampliCircuit.add_pipe('Amp B', 'Amp C')
-    ampliCircuit.add_pipe('Amp C', 'Amp D')
-    ampliCircuit.add_pipe('Amp D', 'Amp E')
-    ampliCircuit.add_pipe('Amp E', 'THRUSTER')
-    ampliCircuit.add_pipe('Amp E', 'Amp A')
+    ampli_circuit = Intnetwork()
+    ampli_circuit.add_nodes(amps)
+    ampli_circuit.add_ports(ports)
+    ampli_circuit.add_pipe('INPUT', 'Amp A')
+    ampli_circuit.add_pipe('Amp A', 'Amp B')
+    ampli_circuit.add_pipe('Amp B', 'Amp C')
+    ampli_circuit.add_pipe('Amp C', 'Amp D')
+    ampli_circuit.add_pipe('Amp D', 'Amp E')
+    ampli_circuit.add_pipe('Amp E', 'THRUSTER')
+    ampli_circuit.add_pipe('Amp E', 'Amp A')
 
-    maxSignal = None
+    max_signal = None
     for sequence in list(itertools.permutations(list(range(5, 10)))):
-        ampliCircuit.clear_buffers(amps)
-        ampliCircuit.clear_buffers(ports)
-        iNode = 0
+        ampli_circuit.clear_buffers(amps)
+        ampli_circuit.clear_buffers(ports)
+        i_node = 0
         for amp in amps:
-            ampliCircuit.nodes[amp].load_from_file('inputs/day_7_input.txt')
-            ampliCircuit.nodes[amp].input(sequence[iNode])
-            iNode = iNode + 1
-        ampliCircuit.nodes['INPUT'].input(0)
-        ampliCircuit.execute()
-        signal = ampliCircuit.nodes['THRUSTER'].outputBuffer[-1]  # Last value
-        if maxSignal is None or signal > maxSignal:
-            maxSignal = signal
-            bestSequence = sequence
+            ampli_circuit.nodes[amp].load_from_file('inputs/day_7_input.txt')
+            ampli_circuit.nodes[amp].input(sequence[i_node])
+            i_node = i_node + 1
+        ampli_circuit.nodes['INPUT'].input(0)
+        ampli_circuit.execute()
+        signal = ampli_circuit.nodes['THRUSTER'].output_buffer[-1]  # Last value
+        if max_signal is None or signal > max_signal:
+            max_signal = signal
+            best_sequence = sequence
 
     print("\nMaximum achievable signal is {0}, with phase settings {1}\n"
-          .format(maxSignal, bestSequence))
-    return maxSignal
+          .format(max_signal, best_sequence))
+    return max_signal
 
 
 if __name__ == "__main__":
