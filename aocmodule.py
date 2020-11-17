@@ -285,7 +285,7 @@ class Intcode():
             # 2 parameters. JNZ (IP+2)
             n_params = 2
             _, values, _ = self._parse_parameters(opcode, raw_modes, n_params)
-            if values[1] is not 0:
+            if values[1] != 0:
                 self.ip = values[2]
             else:
                 self._std_ip_advance(n_params)
@@ -293,7 +293,7 @@ class Intcode():
             # 2 parameters. JEZ (IP+2)
             n_params = 2
             _, values, _ = self._parse_parameters(opcode, raw_modes, n_params)
-            if values[1] is 0:
+            if values[1] == 0:
                 self.ip = values[2]
             else:
                 self._std_ip_advance(n_params)
