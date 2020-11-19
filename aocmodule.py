@@ -8,6 +8,9 @@ PEP 8 compliant
 __author__ = "Filippo Corradino"
 __email__ = "filippo.corradino@gmail.com"
 
+import itertools
+import re
+
 
 class Intcode():
 
@@ -453,3 +456,68 @@ class Orbiter():
             return [self.main] + self.atlas[self.main].get_chain()
         else:
             return []
+
+
+class Moon():
+
+    def __init__(self, pos, vel):
+        self.pos = pos
+        self.vel = vel
+
+    def _pot_energy(self):
+        return sum(abs(x) for x in self.pos)
+
+    def _kin_energy(self):
+        return sum(abs(x) for x in self.vel)
+
+    def tot_energy(self):
+        return self._pot_energy() * self._kin_energy()
+
+
+class LunarSystem():
+
+    def __init__(self, moons=[]):
+        self.moons = moons
+
+    @classmethod
+    def import_moons(cls, infile):
+        moons = []
+        regex = r'<x=(-?\d+), y=(-?\d+), z=(-?\d+)>'
+        with open(infile) as file:
+            for line in file:
+                moons.append(
+                    Moon(pos=[int(x) for x in re.findall(regex, line)[0]],
+                         vel=[0, 0, 0]))
+        return cls(moons)
+
+    @staticmethod
+    def _vector_linearcomb(v1, v2, k1=1, k2=1):
+        return [k1*vj1 + k2*vj2 for vj1, vj2 in zip(v1, v2)]
+
+    @staticmethod
+    def _sign(x):
+        try:
+            return int(x/abs(x))
+        except ZeroDivisionError:
+            return 0
+
+    def propagate(self, steps=1):
+        """Propagate moons trajectories
+
+        Sign and vector sum functions computed inline for performance
+        """
+        for k in range(steps):
+            for moon_a, moon_b in itertools.combinations(self.moons, r=2):
+                r_ab = [b - a for (a, b) in zip(moon_a.pos, moon_b.pos)]
+                f_ab = [(x > 0) - (x < 0) for x in r_ab]  # "force" by b on a
+                f_ba = [(x < 0) - (x > 0) for x in r_ab]  # "force" by a on b
+                moon_a.vel = [v + f for (v, f) in zip(moon_a.vel, f_ab)]
+                moon_b.vel = [v + f for (v, f) in zip(moon_b.vel, f_ba)]
+            for moon in self.moons:
+                moon.pos = [p + v for (p, v) in zip(moon.pos, moon.vel)]
+
+    def total_energy(self):
+        return sum(moon.tot_energy() for moon in self.moons)
+
+    def state_vector_1d(self, axis):
+        return [(moon.pos[axis], moon.vel[axis]) for moon in self.moons]
