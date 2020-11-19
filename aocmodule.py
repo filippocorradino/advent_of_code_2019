@@ -490,17 +490,6 @@ class LunarSystem():
                          vel=[0, 0, 0]))
         return cls(moons)
 
-    @staticmethod
-    def _vector_linearcomb(v1, v2, k1=1, k2=1):
-        return [k1*vj1 + k2*vj2 for vj1, vj2 in zip(v1, v2)]
-
-    @staticmethod
-    def _sign(x):
-        try:
-            return int(x/abs(x))
-        except ZeroDivisionError:
-            return 0
-
     def propagate(self, steps=1):
         """Propagate moons trajectories
 
