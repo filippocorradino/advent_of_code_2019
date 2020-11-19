@@ -71,7 +71,7 @@ def main():
     coordinates = (0, 0)  # Starting coordinates
     hull, _ = paint_hull(hull, coordinates)
     result = len(hull)
-    print("Total number of painted panels: {0}\n".format(result))
+    print("\nTotal number of painted panels: {0}\n".format(result))
     return result
 
 

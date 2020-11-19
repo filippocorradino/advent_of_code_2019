@@ -22,7 +22,7 @@ def main():
     program.execute()
     while program.output_buffer:
         coordinates = program.output()
-    print("Distress signal coordinates are: {0}\n".format(coordinates))
+    print("\nDistress signal coordinates are: {0}\n".format(coordinates))
     return coordinates
 
 

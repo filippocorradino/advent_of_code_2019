@@ -25,7 +25,7 @@ def main():
         ''.join(colour_dict[next(colour for colour in pixel if colour != '2')]
                 for pixel in zip(*layers))
     output = '\n'.join(chunk_string(merger, width))
-    print(output)
+    print('\n' + output + '\n')
     return output
 
 

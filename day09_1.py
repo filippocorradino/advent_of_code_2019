@@ -22,7 +22,7 @@ def main():
     program.execute()
     while program.output_buffer:
         key_code = program.output()
-    print("BOOST key code is: {0}\n".format(key_code))
+    print("\nBOOST key code is: {0}\n".format(key_code))
     return key_code
 
 

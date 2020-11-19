@@ -39,7 +39,7 @@ def main():
                    1: ' '}  # White space
     output = \
         '\n'.join((''.join((colour_dict[j]) for j in row) for row in rows))
-    print(output)
+    print('\n' + output + '\n')
     return output
 
 
