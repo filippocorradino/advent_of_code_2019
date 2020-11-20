@@ -136,7 +136,7 @@ class Intcode():
         self.input_buffer.append(value)
 
     def output(self):
-        """General input
+        """General output
 
         Returns:
             output (int):
