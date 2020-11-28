@@ -9,6 +9,8 @@ __author__ = "Filippo Corradino"
 __email__ = "filippo.corradino@gmail.com"
 
 import itertools
+import heapq
+import math
 import os
 import re
 
@@ -562,3 +564,74 @@ class Display():
     def refresh(self, pixels, legend='', clear=True):
         self.update(pixels)
         self.show(legend=legend, clear=True)
+
+
+class Graph():
+
+    def __init__(self, nodes=[], edges={}):
+        self.nodes = nodes
+        self.edges = edges
+
+    def add_node(self, node):
+        if node not in self.nodes:
+            self.nodes.append(node)
+
+    def add_edge(self, nodeA, nodeB, cost=1, two_ways=False):
+        self.edges[(nodeA, nodeB)] = cost
+        if two_ways:
+            self.edges[(nodeB, nodeA)] = cost
+
+    def remove_node(self, node):
+        self.nodes.remove(node)
+        edges = [x for x in self.edges if (x[0] == node or x[1] == node)]
+        for edge in edges:
+            del self.edges[edge]
+
+    def a_star(self, start, goal, heuristic):
+        """Runs the A* path searching algorithm
+
+        Args:
+            start (tuple):
+                The starting nodecoordinates.
+            goal (tuple):
+                The objective node coordinates.
+            heuristic (function):
+                The heuristic cost as a function of node coordinates.
+                The function shall support tuples as input.
+        """
+        def reconstruct_path(came_from, current):
+            total_path = [current]
+            while current in came_from:
+                current = came_from[current]
+                total_path.append(current)
+            total_path.reverse()
+            return total_path
+
+        # The set of discovered nodes
+        open_set = []
+        heapq.heappush(open_set, (0, start))
+        # Map of origins for the cheapest paths to each node
+        came_from = {}
+        # For node n, g_score(n) is the cheapest path cost from start to n
+        g_score = {}
+        g_score[start] = 0
+        # Main loop
+        while open_set:
+            current = heapq.heappop(open_set)[1]
+            if current == goal:
+                return reconstruct_path(came_from, current)
+            neighbours = [node for node in self.nodes
+                          if (current, node) in self.edges]
+            for neighbour in neighbours:
+                tentative_g_score = \
+                    g_score[current] + self.edges[(current, neighbour)]
+                if tentative_g_score < g_score.get(neighbour, math.inf):
+                    # This path to neighbour is better than any previous one
+                    came_from[neighbour] = current
+                    g_score[neighbour] = tentative_g_score
+                    # For node n, f_score(n) = g_score(n) + heuristic(n)
+                    f_score = g_score[neighbour] + heuristic(neighbour)
+                    if neighbour not in open_set:
+                        heapq.heappush(open_set, (f_score, neighbour))
+        # Open set is empty but goal was never reached
+        return None
