@@ -12,7 +12,11 @@ PEP 8 compliant
 __author__ = "Filippo Corradino"
 __email__ = "filippo.corradino@gmail.com"
 
-from day14_1 import main as cost_function
+from day14_1 import main as cost
+
+
+def cost_function(n_target):
+    return cost(n_target=n_target, printout=False)
 
 
 def main(n_source=1000000000000):

@@ -67,7 +67,7 @@ def basecost_product(recipes, target, qty=1):
     return costs
 
 
-def main(target='FUEL', source='ORE', n_target=1, printout=False):
+def main(target='FUEL', source='ORE', n_target=1, printout=True):
     recipes = parse_recipes('inputs/day_14_input.txt')
     costs = basecost_product(recipes, target, n_target)
     n_source = costs[source]
@@ -78,4 +78,4 @@ def main(target='FUEL', source='ORE', n_target=1, printout=False):
 
 
 if __name__ == "__main__":
-    main(printout=True)
+    main()

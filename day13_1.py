@@ -24,7 +24,7 @@ def main():
         x = program.output()
         y = program.output()
         v = program.output()
-        screen.update({(x, y): v})
+        screen[(x, y)] = v
     n_blocks = sum(x == 2 for x in screen.values())
     print("\nThere are a total of {0} blocks\n".format(n_blocks))
     return n_blocks

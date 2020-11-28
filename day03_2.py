@@ -42,7 +42,7 @@ def main():
                     entry = {wire_id: weight}
                     if point not in wiring:
                         if point not in wire:
-                            wire.update({point: entry})
+                            wire[point] = entry
                     else:
                         wiring[point].update(entry)
             wiring.update(wire)

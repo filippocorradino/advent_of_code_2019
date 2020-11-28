@@ -53,7 +53,7 @@ def paint_hull(hull, coordinates):
             break
         # First output is the colour
         colour = program.output()
-        hull.update({coordinates: colour})
+        hull[coordinates] = colour
         # Second output is the rotation
         rotation = program.output()
         if rotation == 0:

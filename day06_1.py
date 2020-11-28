@@ -17,12 +17,12 @@ from aocmodule import Orbiter
 
 def import_orbitmap():
     bodies = {}
-    bodies.update({'COM': Orbiter(bodies)})
+    bodies['COM'] = Orbiter(bodies)
     with open('inputs/day_06_input.txt') as file:
         for line in file:
             line = line.rstrip()
             main_body, orbiter = line.split(')')
-            bodies.update({orbiter: Orbiter(bodies, main_body)})
+            bodies[orbiter] = Orbiter(bodies, main_body)
     return bodies
 
 

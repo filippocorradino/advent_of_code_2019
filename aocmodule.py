@@ -9,6 +9,7 @@ __author__ = "Filippo Corradino"
 __email__ = "filippo.corradino@gmail.com"
 
 import itertools
+import os
 import re
 
 
@@ -32,6 +33,8 @@ class Intcode():
             ip (int):
                 The value to be assigned to the Instruction Pointer.
         """
+        # TODO: understand why the following alternative doesn't work:
+        # self.memory.update({i: e for (i, e) in enumerate(state)})
         for position in range(len(state)):
             self.memory.update({position: state[position]})
         self.ip = ip
@@ -93,7 +96,7 @@ class Intcode():
                 The value stored at the given address.
         """
         if address not in self.memory:
-            self.memory.update({address: 0})
+            self.memory[address] = 0
         value = self.memory[address]
         return value
 
@@ -110,7 +113,7 @@ class Intcode():
             value (int):
                 The value to be stored at the given address.
         """
-        self.memory.update({address: value})
+        self.memory[address] = value
 
     def dsky(self, noun, verb):
         """DSKY input
@@ -365,7 +368,7 @@ class Intnetwork():
                 Tags to refer to the nodes.
         """
         for tag in tags:
-            self.nodes.update({tag: Intcode()})
+            self.nodes[tag] = Intcode()
 
     def add_ports(self, tags):
         """Add a set of ports (or make some node ports)
@@ -376,7 +379,7 @@ class Intnetwork():
         """
         for tag in tags:
             if tag not in self.nodes:
-                self.nodes.update({tag: Intcode()})
+                self.nodes[tag] = Intcode()
             self.nodes[tag].load(Intnetwork.PORT_PROGRAM)
 
     def add_pipe(self, source, dest):
@@ -510,3 +513,52 @@ class LunarSystem():
 
     def state_vector_1d(self, axis):
         return [(moon.pos[axis], moon.vel[axis]) for moon in self.moons]
+
+
+class Display():
+
+    def __init__(self, symbol_dict={}, default_pixel=0):
+        self.symbol_dict = symbol_dict
+        self.default_pixel = default_pixel
+        self.pixels = {}
+        self.size = None
+
+    @staticmethod
+    def _clear():
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+    def set_size(self, size):
+        self.size = size
+
+    def update(self, pixels):
+        self.pixels.update(pixels)
+
+    def show(self, legend='', clear=True):
+        min_x = min((x for (x, y) in self.pixels))
+        min_y = min((y for (x, y) in self.pixels))
+        if self.size:
+            max_x = min_x + self.size[0]
+            max_y = min_y + self.size[1]
+        else:
+            max_x = max((x for (x, y) in self.pixels))
+            max_y = max((y for (x, y) in self.pixels))
+        # Reconstruct all symbol values
+        rows = []
+        for y in range(min_y, max_y + 1):
+            row = []
+            for x in range(min_x, max_x + 1):
+                try:
+                    row.append(self.pixels[(x, y)])
+                except KeyError:
+                    row.append(self.default_pixel)
+            rows.append(row)
+        # Display
+        output = '\n'.join((''.join((self.symbol_dict[j]) for j in row)
+                            for row in rows))
+        if clear:
+            self._clear()
+        print("\n{0}\n{1}\n".format(output, legend))
+
+    def refresh(self, pixels, legend='', clear=True):
+        self.update(pixels)
+        self.show(legend=legend, clear=True)

@@ -32,7 +32,7 @@ def main():
         current_state = str(system.state_vector_1d(axis))
         counter = 0
         while current_state not in phase_space:
-            phase_space.update({current_state: counter})
+            phase_space[current_state] = counter
             counter = counter + 1
             system.propagate()
             current_state = str(system.state_vector_1d(axis))
