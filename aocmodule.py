@@ -526,7 +526,7 @@ class Display():
         self.size = None
 
     @staticmethod
-    def _clear():
+    def clear():
         os.system('cls' if os.name == 'nt' else 'clear')
 
     def set_size(self, size):
@@ -558,7 +558,7 @@ class Display():
         output = '\n'.join((''.join((self.symbol_dict[j]) for j in row)
                             for row in rows))
         if clear:
-            self._clear()
+            self.clear()
         print("\n{0}\n{1}\n".format(output, legend))
 
     def refresh(self, pixels, legend='', clear=True):
@@ -635,3 +635,30 @@ class Graph():
                         heapq.heappush(open_set, (f_score, neighbour))
         # Open set is empty but goal was never reached
         return None
+
+
+def _find_sublist(mainlist, sublist, start=0):
+    length = len(sublist)
+    for index in range(start, len(mainlist)):
+        if mainlist[index:index+length] == sublist:
+            return index, index + length
+
+
+def replace_sublist(mainlist, sublist, replacement):
+    length = len(replacement)
+    index = 0
+    for start, end in iter(lambda: _find_sublist(mainlist, sublist, index),
+                           None):
+        mainlist[start:end] = replacement
+        index = start + length
+
+
+def split_list(mainlist, delmiter):
+    outlist = []
+    index = 0
+    for start, end in iter(lambda: _find_sublist(mainlist, delmiter, index),
+                           None):
+        outlist.append(mainlist[index:start])
+        index = end
+    outlist.append(mainlist[index:])
+    return outlist
