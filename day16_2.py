@@ -24,6 +24,16 @@ def cheaty_fft_phase(data):
 
 
 def main(n_phases=100, repeat=10000, message_len=8, offset_indicator_len=7):
+    """
+    The idea with this one is that for digits in the second half of the data,
+    using the standard pattern, there is a simplified formula for a FFT phase:
+    data[k] = abs(sum(data[k:])) % 10
+    This is because all pattern values with index 1..k-1 are 0, and then there
+    are only 1s for the remainder of the data (doesn't have space to roll over
+    to the second zero section).
+    Therefore this solution ONLY works if the message lies in the second half
+    of the data...
+    """
     data = []
     with open('inputs/day_16_input.txt') as file:
         for digit in file.read():

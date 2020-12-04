@@ -40,15 +40,16 @@ def main(start=(0, 0), display=False):
         monitor.symbol_dict = screendict
         monitor.default_pixel = 1
     minute = -1
-    generator = next(coordinates for coordinates, value in environment.items()
-                     if value == 2)
-    open_oxygen_set = [generator]
+    open_oxygen_set = \
+        [next(coordinates for coordinates, value in environment.items()
+              if value == 2)]  # Only oxygen generator for now
     while open_oxygen_set:
         minute = minute + 1
         for x in open_oxygen_set:
             environment[x] = 2
         if display:
             monitor.refresh(environment, legend="MINUTE {0}".format(minute))
+        # Update open set with all adjacent tiles (not yet oxygenated)
         open_oxygen_set = [x[1] for x in pathspace.edges if
                            x[0] in open_oxygen_set and environment[x[1]] == 1]
     print("\nOxygen will fill the compartment in: {0} minutes\n"

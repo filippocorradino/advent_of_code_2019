@@ -17,14 +17,13 @@ from queue import LifoQueue
 from aocmodule import Display, Graph, Intcode
 
 
-screendict = {0: '█',
-              1: ' ',
-              2: 'X',
-              3: '.',
-              4: '#',
-              5: '!',
-              6: 'D',
-              7: 'O'}
+screendict = {0: '█',  # block
+              1: ' ',  # free tile
+              2: 'X',  # target tile
+              3: '.',  # planned path
+              4: '#',  # open set tile
+              5: '!',  # current destination
+              6: 'D'}  # current position
 
 
 def display_status(monitor, environment, path, open_set, goal, current):
@@ -34,8 +33,8 @@ def display_status(monitor, environment, path, open_set, goal, current):
     - 0: block
     - 1: free tile
     - 2: target tile
-    - 3: path planned
-    - 4: open set
+    - 3: planned path
+    - 4: open set tile
     - 5: current destination
     - 6: current position
     """
@@ -83,9 +82,9 @@ def survey_area(program, environment, pathspace, current, objective,
     if monitor:
         monitor.symbol_dict = screendict
         monitor.default_pixel = 1
-    exit_condition = False
-    open_set = LifoQueue()  # Greedy DFS, assume search space is bounded...
-    while not exit_condition:
+    found = False
+    open_set = LifoQueue()  # DFS, we assume the search space is bounded...
+    while not found:
         # Add new neighbours to open set (we assume they are all traversable)
         current_neighbours = neighbours(current)
         for neighbour in current_neighbours:
@@ -99,9 +98,7 @@ def survey_area(program, environment, pathspace, current, objective,
         if open_set.qsize():
             goal = open_set.get()
         else:
-            # Completed survey
-            exit_condition = True
-            break
+            break  # Completed survey
         path = \
             pathspace.a_star(current, goal,
                              lambda x: abs(x[0]-goal[0]) + abs(x[1]-goal[1]))
@@ -126,7 +123,7 @@ def survey_area(program, environment, pathspace, current, objective,
             current = path[-1]
         if status == objective:
             # We hit the target tile!
-            exit_condition = True
+            found = True
     return current
 
 
